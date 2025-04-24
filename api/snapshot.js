@@ -1,14 +1,14 @@
-export default async function handler(req, res) {
-  console.log('DD_API_KEY:', !!process.env.DD_API_KEY, 'DD_APP_KEY:', !!process.env.DD_APP_KEY);
-  …
-}
-
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  // Only allow POST
   if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   const { DD_API_KEY, DD_APP_KEY } = process.env;
+  if (!DD_API_KEY || !DD_APP_KEY) {
+    return res.status(500).json({ error: 'Missing Datadog keys' });
+  }
 
   try {
     const ddRes = await fetch(
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     const data = await ddRes.json();
     return res.status(ddRes.status).json(data);
   } catch (err) {
-    console.error(err);
+    console.error('Snapshot fetch error:', err);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
-}
+};
