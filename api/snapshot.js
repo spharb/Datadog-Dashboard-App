@@ -1,4 +1,9 @@
 export default async function handler(req, res) {
+  console.log('DD_API_KEY:', !!process.env.DD_API_KEY, 'DD_APP_KEY:', !!process.env.DD_APP_KEY);
+  …
+}
+
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
