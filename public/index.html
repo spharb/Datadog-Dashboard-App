@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Datadog Dashboard Viewer</title>
+</head>
+<body>
+  <h2>Live CPU Usage</h2>
+  <div id="dashboard"></div>
+
+  <script>
+    const payload = {
+      graph_def: {
+        requests: [{
+          q: "avg:system.cpu.user{*}",
+          type: "line"
+        }],
+        title: "User CPU Usage"
+      },
+      title: "CPU Snapshot",
+      width: 600,
+      height: 300
+    };
+
+    async function loadGraph() {
+      const response = await fetch('/api/snapshot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      const img = document.createElement('img');
+      img.src = data.snapshot_url;
+      document.getElementById('dashboard').appendChild(img);
+    }
+
+    loadGraph();
+  </script>
+</body>
+</html>
